@@ -33,7 +33,11 @@
       "Bash(gh repo create:*)",
       "Bash(sudo mkdir:*)",
       "Bash(sudo cp:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd .claude/settings.local.json to .gitignore\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
