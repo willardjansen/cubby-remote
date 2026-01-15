@@ -85,7 +85,9 @@ Cubase Articulation Remote is a Next.js web app that displays Cubase Expression 
 - Auto-detects local IP and displays it on startup
 
 ### 3. Cubase MIDI Remote Script (`cubase-midi-remote/articulation_remote.js`)
-- Installed to: `C:\Program Files\Steinberg\Cubase 15\midiremote_factory_scripts\Public\articulation\remote\`
+- Installed to:
+  - Windows: `C:\Program Files\Steinberg\Cubase 15\midiremote_factory_scripts\Public\articulation\remote\`
+  - macOS: `/Applications/Cubase 15.app/Contents/midiremote_factory_scripts/Public/articulation/remote/`
 - Sends track name when you select a track in Cubase
 - Uses MIDI CC on channel 16 to encode track name as bytes
 
@@ -191,12 +193,64 @@ This feature automatically loads the matching expression map when you select a t
 ## macOS Setup
 
 ### Prerequisites
-1. Enable IAC Driver in Audio MIDI Setup
-2. Add bus "Browser to Cubase"
-3. For auto track switching, add another bus "ArticulationRemote"
+1. Install Node.js v18+ (via Homebrew: `brew install node`)
+2. Install Xcode Command Line Tools: `xcode-select --install`
+
+### IAC Driver Setup
+1. Open **Audio MIDI Setup** (in /Applications/Utilities)
+2. Go to **Window > Show MIDI Studio**
+3. Double-click the **IAC Driver** icon
+4. Check **"Device is online"**
+5. In the Ports section, click **+** to add two buses:
+   - `Bus 1` (rename to `Browser to Cubase` if desired) - for sending articulations TO Cubase
+   - `ArticulationRemote` - for receiving track names FROM Cubase
+6. Click **Apply**
 
 ### Running
-Same as Windows, IAC Driver auto-selected.
+```bash
+npm install
+npm run all     # Starts both Next.js and MIDI bridge
+```
+
+### Cubase Setup (macOS)
+
+Unlike Windows, macOS IAC Driver doesn't have the MIDI feedback loop issue, so setup is simpler:
+
+1. **Configure MIDI Port Setup** (Studio > Studio Setup > MIDI Port Setup):
+   - Ensure IAC Driver ports are visible and active
+
+2. Assign Expression Maps to tracks
+
+### Auto Track Switching Setup (macOS)
+
+1. **Install the MIDI Remote Script** (requires admin password):
+   ```bash
+   sudo mkdir -p "/Applications/Cubase 15.app/Contents/midiremote_factory_scripts/Public/articulation/remote"
+
+   sudo cp "cubase-midi-remote/articulation_remote.js" "/Applications/Cubase 15.app/Contents/midiremote_factory_scripts/Public/articulation/remote/"
+   ```
+
+2. **Restart Cubase** (or open MIDI Remote Script Console and click "Reload Scripts")
+
+3. **Add the device in Cubase MIDI Remote Manager**:
+   - Open Studio > MIDI Remote Manager
+   - Click **"+ Add MIDI Controller Surface"**
+   - Select Vendor: **articulation**, Model: **remote**
+   - Set both Input and Output to **ArticulationRemote** (may show as "Browser to cubase ArticulationRemote")
+
+4. **Verify in Script Console**:
+   - Open the MIDI Remote Script Console
+   - At the bottom, confirm `remote` shows ArticulationRemote for both ports
+   - When switching tracks, you should see `ART-REMOTE: Track = "TrackName"` messages
+
+5. **Place expression maps on server**:
+   - Put `.expressionmap` files in the `expression-maps/` folder
+   - Name them to match your Cubase track names (partial matching supported)
+
+### iPad Access (from Mac)
+1. Run `npm run midi` - it displays your Mac's IP address
+2. iPad Safari/Chrome: `http://YOUR_IP:3000`
+3. Mac and iPad must be on the same network
 
 ## Current State (Jan 2026)
 
@@ -292,5 +346,7 @@ If track switching doesn't work, check each step:
 - **Test on Windows**: loopMIDI required for virtual MIDI
 - **MIDI Remote API**: Use `hostValue.mOnTitleChange` NOT `binding.mOnTitleChange`
 - **MIDI Remote sendMidi**: Use array syntax `sendMidi(activeDevice, [0xBF, 119, len])` and `.bind({ midiOutput })` pattern
-- **Factory scripts location**: `C:\Program Files\Steinberg\Cubase 15\midiremote_factory_scripts\Public\` (requires admin)
+- **Factory scripts location**:
+  - Windows: `C:\Program Files\Steinberg\Cubase 15\midiremote_factory_scripts\Public\` (requires admin)
+  - macOS: `/Applications/Cubase 15.app/Contents/midiremote_factory_scripts/Public/` (requires sudo)
 - Run `npm run build` to verify no TypeScript errors
