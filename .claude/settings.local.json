@@ -19,7 +19,12 @@
       "Bash(cmd.exe /c \"del \\\\\\\\?\\\\C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\\\\nul\")",
       "Bash(python -c \"import os; os.remove\\(r''\\\\\\\\?\\\\C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\\\\nul''\\)\")",
       "Bash(python -c \"import os; os.unlink\\(r''C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\\\\nul''\\)\")",
-      "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" add -A)"
+      "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" add -A)",
+      "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" config user.email \"willardjansen@me.com\")",
+      "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" config user.name \"willardjansen\")",
+      "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" commit -m \"$\\(cat <<''EOF''\nAdd auto track switching via Cubase MIDI Remote\n\n- Add articulation_remote.js MIDI Remote script for Cubase\n- Implement track name protocol \\(CC 117-119 on channel 16\\)\n- Auto-load matching expression maps when track changes in Cubase\n- Update midi-server.js for bidirectional MIDI communication\n- Update documentation with correct installation instructions\n- Fix TypeScript build errors and remove static export config\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" status)",
+      "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" push origin master)"
     ]
   }
 }
