@@ -44,3 +44,4 @@ coverage/
 *.log
 *.pid
 *.seed
+.claude/settings.local.json

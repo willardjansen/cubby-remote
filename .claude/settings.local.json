@@ -24,7 +24,16 @@
       "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" config user.name \"willardjansen\")",
       "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" commit -m \"$\\(cat <<''EOF''\nAdd auto track switching via Cubase MIDI Remote\n\n- Add articulation_remote.js MIDI Remote script for Cubase\n- Implement track name protocol \\(CC 117-119 on channel 16\\)\n- Auto-load matching expression maps when track changes in Cubase\n- Update midi-server.js for bidirectional MIDI communication\n- Update documentation with correct installation instructions\n- Fix TypeScript build errors and remove static export config\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" status)",
-      "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" push origin master)"
+      "Bash(git -C \"C:\\\\Users\\\\willa\\\\dev\\\\cubase-articulation-remote\" push origin master)",
+      "Bash(npm run all:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9)",
+      "Bash(git remote rename:*)",
+      "Bash(gh auth status:*)",
+      "Bash(gh repo create:*)",
+      "Bash(sudo mkdir:*)",
+      "Bash(sudo cp:*)",
+      "Bash(curl:*)"
     ]
   }
 }
