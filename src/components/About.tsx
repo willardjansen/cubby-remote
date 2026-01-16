@@ -28,7 +28,7 @@ export default function About() {
         </button>
 
         <h2 className="text-xl font-bold text-white mb-1">
-          Cubase Articulation Remote
+          Cubby Remote
         </h2>
         <p className="text-zinc-400 text-sm mb-4">
           Free &amp; Open Source under GPL-3.0
@@ -43,7 +43,7 @@ export default function About() {
 
         <div className="space-y-3 mb-6">
           <a
-            href="https://github.com/willardjansen/cubase-articulation-remote"
+            href="https://github.com/willardjansen/cubby-remote"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 text-zinc-300 hover:text-white transition-colors"
@@ -73,7 +73,7 @@ export default function About() {
         </div>
 
         <p className="text-zinc-500 text-xs mt-4">
-          Created by Willard Jansen
+          © 2026 Willard Jansen. Cubby Remote.
         </p>
       </div>
     </div>
