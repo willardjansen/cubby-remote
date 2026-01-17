@@ -43,11 +43,11 @@ The standalone app includes:
 For developers or advanced users who want to run from source.
 
 **Prerequisites:**
-1. Install **Node.js v21.6.2** from https://nodejs.org/dist/v21.6.2/
-   - Windows: [node-v21.6.2-x64.msi](https://nodejs.org/dist/v21.6.2/node-v21.6.2-x64.msi)
-   - macOS: [node-v21.6.2.pkg](https://nodejs.org/dist/v21.6.2/node-v21.6.2.pkg)
-   - **Note:** This app was built with Node.js v21.6.2 and requires this specific version due to native MIDI module compatibility
-2. Verify installation: `node --version` should show v21.6.2
+1. Install Node.js:
+   - **Windows:** Install **Node.js v21.6.2** from https://nodejs.org/dist/v21.6.2/node-v21.6.2-x64.msi
+     - **Note:** Windows requires this specific version due to native MIDI module compatibility
+   - **macOS:** Install the latest Node.js from https://nodejs.org/ (v25+ works fine)
+2. Verify installation: `node --version`
 
 ```bash
 # 1. Install dependencies
@@ -271,18 +271,15 @@ Or use the web UI at http://localhost:3000/template-builder
 
 ## Building from Source
 
-### Prerequisites (All Platforms)
+### Prerequisites
 
-**Install Node.js v21.6.2:**
-1. Download from https://nodejs.org/dist/v21.6.2/
-   - Windows: [node-v21.6.2-x64.msi](https://nodejs.org/dist/v21.6.2/node-v21.6.2-x64.msi)
-   - macOS Intel: [node-v21.6.2.pkg](https://nodejs.org/dist/v21.6.2/node-v21.6.2.pkg)
-   - macOS Apple Silicon: [node-v21.6.2-arm64.tar.gz](https://nodejs.org/dist/v21.6.2/node-v21.6.2-darwin-arm64.tar.gz)
-2. Run the installer
-3. Verify: Open terminal/command prompt and run `node --version`
-   - Should show `v21.6.2`
+**Windows:**
+- Install **Node.js v21.6.2** from https://nodejs.org/dist/v21.6.2/node-v21.6.2-x64.msi
+- This specific version is required due to native MIDI module compatibility on Windows
 
-> **Important:** This app was built with Node.js v21.6.2. The native MIDI module requires this specific version for compatibility.
+**macOS:**
+- Install the latest Node.js from https://nodejs.org/ (v25+ works fine)
+- Install Xcode Command Line Tools: `xcode-select --install`
 
 ### Windows
 
@@ -304,10 +301,7 @@ The installer will be at `dist/Cubby Remote Setup 1.1.0.exe`
 
 ### macOS
 
-**Additional Requirements:**
-- Xcode Command Line Tools: `xcode-select --install`
-
-**Build Universal DMG (Intel + Apple Silicon):**
+**Build DMG Installers:**
 ```bash
 npm install
 npm rebuild midi  # Compile native MIDI module
