@@ -156,7 +156,7 @@ expression-maps/
     └── Trumpets.expressionmap
 ```
 
-**Important:** Name the files to match your Cubase track names for auto-switching.
+**Important:** Use the same expression maps that you use in the Cubase tracks, the names must be matching as well.
 
 ## macOS Setup
 
