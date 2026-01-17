@@ -98,7 +98,7 @@ async function initMidi() {
   }
 
   // Find Cubase to Browser port
-  const preferredInNames = ['TrackSender', 'ArticulationRemote', 'Articulation Remote', 'Cubase to Browser'];
+  const preferredInNames = ['ArticulationRemote', 'Articulation Remote', 'Cubase to Browser'];
   let inputPortIndex = -1;
 
   for (const preferred of preferredInNames) {

@@ -142,7 +142,8 @@ The project includes an Electron wrapper that creates a system tray application:
 ## Windows Setup
 
 ### Prerequisites
-1. Install Node.js v18+
+1. Install Node.js v21.6.2 from https://nodejs.org/dist/v21.6.2/node-v21.6.2-x64.msi
+   - **Note:** This app requires Node.js v21.6.2 due to native MIDI module compatibility
 2. Install loopMIDI: https://www.tobias-erichsen.de/software/loopmidi.html
 3. Create **two** ports in loopMIDI:
    - `Browser to Cubase` (for sending articulations TO Cubase)
@@ -221,7 +222,9 @@ This feature automatically loads the matching expression map when you select a t
 ## macOS Setup
 
 ### Prerequisites
-1. Install Node.js v18+ (via Homebrew: `brew install node`)
+1. Install Node.js v21.6.2 from https://nodejs.org/dist/v21.6.2/node-v21.6.2.pkg
+   - **Note:** This app requires Node.js v21.6.2 due to native MIDI module compatibility
+   - Alternative: `brew install node@21` (may not get exact version)
 2. Install Xcode Command Line Tools: `xcode-select --install`
 
 ### IAC Driver Setup

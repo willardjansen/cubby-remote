@@ -40,8 +40,11 @@ The standalone app includes the built-in MIDI server - no terminal commands need
 For developers or advanced users who want to run from source.
 
 **Prerequisites:**
-1. Install **Node.js 18+** from https://nodejs.org/ (LTS version recommended)
-2. Verify installation: `node --version` should show v18.x or higher
+1. Install **Node.js v21.6.2** from https://nodejs.org/dist/v21.6.2/
+   - Windows: [node-v21.6.2-x64.msi](https://nodejs.org/dist/v21.6.2/node-v21.6.2-x64.msi)
+   - macOS: [node-v21.6.2.pkg](https://nodejs.org/dist/v21.6.2/node-v21.6.2.pkg)
+   - **Note:** This app was built with Node.js v21.6.2 and requires this specific version due to native MIDI module compatibility
+2. Verify installation: `node --version` should show v21.6.2
 
 ```bash
 # 1. Install dependencies
@@ -207,11 +210,16 @@ The MIDI Remote script installation is similar to Windows, but in the macOS Cuba
 
 ### Prerequisites (All Platforms)
 
-**Install Node.js 18+:**
-1. Download from https://nodejs.org/ (choose LTS version)
+**Install Node.js v21.6.2:**
+1. Download from https://nodejs.org/dist/v21.6.2/
+   - Windows: [node-v21.6.2-x64.msi](https://nodejs.org/dist/v21.6.2/node-v21.6.2-x64.msi)
+   - macOS Intel: [node-v21.6.2.pkg](https://nodejs.org/dist/v21.6.2/node-v21.6.2.pkg)
+   - macOS Apple Silicon: [node-v21.6.2-arm64.tar.gz](https://nodejs.org/dist/v21.6.2/node-v21.6.2-darwin-arm64.tar.gz)
 2. Run the installer
 3. Verify: Open terminal/command prompt and run `node --version`
-   - Should show `v18.x.x` or higher
+   - Should show `v21.6.2`
+
+> **Important:** This app was built with Node.js v21.6.2. The native MIDI module requires this specific version for compatibility.
 
 ### Windows
 
