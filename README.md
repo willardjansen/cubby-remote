@@ -159,7 +159,7 @@ expression-maps/
     └── Trumpets.expressionmap
 ```
 
-**Important:** Use the same expression maps that you use in the Cubase tracks, the names must be matching as well.
+**Important:** Names of expression map and trackname must be the same.
 
 ## macOS Setup
 
