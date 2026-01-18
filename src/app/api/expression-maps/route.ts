@@ -2,7 +2,29 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-const EXPRESSION_MAPS_DIR = path.join(process.cwd(), 'expression-maps');
+// Try installed app folder first, fall back to dev folder
+function getExpressionMapsDir(): string {
+  // Check for installed Electron app folder first
+  const installedAppDir = path.join(
+    process.env.LOCALAPPDATA || path.join(process.env.USERPROFILE || '', 'AppData', 'Local'),
+    'Programs',
+    'Cubby Remote',
+    'resources',
+    'expression-maps'
+  );
+
+  if (fs.existsSync(installedAppDir)) {
+    console.log('Using installed app expression maps:', installedAppDir);
+    return installedAppDir;
+  }
+
+  // Fall back to dev folder
+  const devDir = path.join(process.cwd(), 'expression-maps');
+  console.log('Using dev expression maps:', devDir);
+  return devDir;
+}
+
+const EXPRESSION_MAPS_DIR = getExpressionMapsDir();
 
 interface MapFile {
   name: string;

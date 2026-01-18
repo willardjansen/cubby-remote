@@ -253,6 +253,34 @@ export default function TemplateBuilder() {
       );
     }
 
+    // Render individual map files in this folder
+    const fileIndent = (depth + 1) * 20;
+    node.maps
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .forEach(map => {
+        elements.push(
+          <div key={map.path} style={{ marginLeft: `${fileIndent}px` }} className="py-0.5">
+            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 px-2 py-1 rounded text-sm">
+              <input
+                type="checkbox"
+                checked={selectedMaps.has(map.path)}
+                onChange={(e) => {
+                  const newSelected = new Set(selectedMaps);
+                  if (e.target.checked) {
+                    newSelected.add(map.path);
+                  } else {
+                    newSelected.delete(map.path);
+                  }
+                  setSelectedMaps(newSelected);
+                }}
+                className="w-4 h-4"
+              />
+              <span className="text-gray-300">📄 {map.name}</span>
+            </label>
+          </div>
+        );
+      });
+
     // Render subfolders
     Object.values(node.subfolders)
       .sort((a, b) => a.name.localeCompare(b.name))
