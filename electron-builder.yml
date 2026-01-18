@@ -26,6 +26,10 @@ extraResources:
     to: "expression-maps"
     filter:
       - "**/*.expressionmap"
+  - from: "cubase-midi-remote"
+    to: "cubase-midi-remote"
+    filter:
+      - "*.js"
   - from: "build/tray-icon.png"
     to: "tray-icon.png"
 
@@ -52,6 +56,8 @@ mac:
   gatekeeperAssess: false
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
+  notarize:
+    teamId: "9N27LU6UBD"
 
 dmg:
   contents:

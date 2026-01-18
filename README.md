@@ -30,6 +30,7 @@ An articulation switcher for Cubase users, designed for iPad/tablet use. Automat
    - macOS Intel: `Cubby Remote-1.1.0.dmg`
    - macOS Apple Silicon: `Cubby Remote-1.1.0-arm64.dmg`
 2. Run the installer
+   - **macOS users:** If you see "Cubby Remote is damaged", see [macOS Installation Issue](#macos-installation-issue) below
 3. Launch "Cubby Remote" from Start Menu or Desktop
 4. The app runs in system tray and auto-opens browser to http://localhost:3000
 
@@ -326,6 +327,24 @@ npm run electron:build
 3. Check build logs in `dist/builder-debug.yml` if the build fails
 
 ## Troubleshooting
+
+### macOS Installation Issue
+
+If you see **"Cubby Remote is damaged and can't be opened"** when trying to open the app, this is macOS blocking the application - it's not actually damaged.
+
+**Fix:** Open Terminal and run:
+
+```bash
+xattr -cr "/Applications/Cubby Remote.app"
+```
+
+Or if the app is still in your Downloads folder:
+
+```bash
+xattr -cr ~/Downloads/Cubby\ Remote.app
+```
+
+Then try opening the app again.
 
 ### iPad shows "MIDI Bridge not running"
 

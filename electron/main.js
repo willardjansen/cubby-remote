@@ -26,6 +26,13 @@ function getExpressionMapsDir() {
   return mapsDir;
 }
 
+// Cubase MIDI Remote script directory
+function getCubaseScriptDir() {
+  return isDev
+    ? path.join(__dirname, '..', 'cubase-midi-remote')
+    : path.join(process.resourcesPath, 'cubase-midi-remote');
+}
+
 // MIDI state (for tray menu display only)
 let selectedOutPortName = 'Starting...';
 let selectedInPortName = 'Starting...';
@@ -370,6 +377,13 @@ function updateTrayMenu() {
       label: 'Open Expression Maps Folder',
       click: () => {
         shell.openPath(getExpressionMapsDir());
+      }
+    },
+    { type: 'separator' },
+    {
+      label: 'Open Cubase Script Folder',
+      click: () => {
+        shell.openPath(getCubaseScriptDir());
       }
     },
     { type: 'separator' },
