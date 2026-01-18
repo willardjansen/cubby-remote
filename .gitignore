@@ -49,3 +49,6 @@ coverage/
 *.seed
 .claude/settings.local.json
 .claude/settings.local.json
+
+# User's personal expression maps (don't commit to repo)
+expression-maps/
