@@ -175,7 +175,7 @@ copy "cubase-midi-remote\articulation_remote.js" "C:\Program Files\Steinberg\Cub
 
 **For Development Mode:**
 
-Place your `.expressionmap` files in the `expression-maps/` folder:
+The `expression-maps/` folder is automatically created when you first run the app. Place your `.expressionmap` files there:
 
 ```
 expression-maps/
@@ -185,6 +185,8 @@ expression-maps/
 └── Brass/
     └── Trumpets.expressionmap
 ```
+
+**Note:** This folder is not included in the git repository - it's created locally when needed.
 
 **Important Naming Convention:**
 - Track names in Cubase must match expression map filenames for auto-switching to work
