@@ -39,6 +39,16 @@ The standalone app includes:
 - Quick access Template Builder button in the app header
 - MIDI Server Log viewer for troubleshooting (in system tray menu)
 
+**Windows SmartScreen Warning:**
+
+When running the installer on Windows, you may see "Windows protected your PC" from Microsoft Defender SmartScreen. This happens because the app is not yet code-signed.
+
+**To install:**
+1. Click **"More info"**
+2. Click **"Run anyway"**
+
+This is safe - the warning appears for unsigned applications. The app is open source and you can review the code at https://github.com/willardjansen/cubby-remote.
+
 ### Option 2: Development Mode
 
 For developers or advanced users who want to run from source.
@@ -369,6 +379,19 @@ npm run electron:build
 3. Check build logs in `dist/builder-debug.yml` if the build fails
 
 ## Troubleshooting
+
+### Windows SmartScreen Warning
+
+If you see **"Windows protected your PC - Microsoft Defender SmartScreen prevented an unrecognized app from starting"** when running the installer, this is normal for unsigned applications.
+
+**This is safe.** The app is open source and not code-signed yet (code signing certificates cost $300+/year).
+
+**To proceed:**
+1. Click **"More info"**
+2. Click **"Run anyway"**
+3. The installer will run normally
+
+**Why this happens:** Windows SmartScreen blocks unsigned applications by default. Once the app gains enough download reputation or we acquire a code signing certificate, this warning will disappear.
 
 ### macOS Installation Issue
 
