@@ -6,10 +6,11 @@
  * - Receives MIDI from browser via WebSocket → sends to Cubase via "Browser to Cubase"
  * - Receives MIDI from Cubase via "Cubase to Browser" → sends to browser via WebSocket
  *
- * Usage: node midi-server.js [port]
+ * Usage: node midi-server.js [port] [certDir]
  *
  * If port is not specified, it will auto-find an available port starting from 7101.
  * Avoids macOS reserved ports (5000, 7000 used by AirPlay).
+ * If certDir is specified and contains server.key/server.crt, WSS will be used.
  */
 
 const WebSocket = require('ws');
@@ -17,6 +18,10 @@ const JZZ = require('jzz');
 const midi = require('midi');
 const os = require('os');
 const net = require('net');
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 // Default port - can be overridden by command line arg or auto-detected
 const DEFAULT_WS_PORT = 7101;
@@ -53,6 +58,10 @@ async function findAvailablePort(startPort, maxAttempts = 10) {
 
 // Will be set after finding available port
 let WS_PORT = DEFAULT_WS_PORT;
+
+// SSL certificate paths (optional - for HTTPS/WSS)
+let SSL_CERT_DIR = null;
+let useSSL = false;
 
 // Get local IP address
 function getLocalIP() {
@@ -228,67 +237,122 @@ function sendMidi(status, data1, data2) {
   }
 }
 
-// Start WebSocket server
+// Start WebSocket server (with optional HTTPS/WSS)
 function startServer() {
   return new Promise((resolve, reject) => {
-    const wss = new WebSocket.Server({ port: WS_PORT });
+    let wss;
+    let server = null;
 
-    wss.on('error', (err) => {
-      reject(err);
-    });
+    // Check if we should use SSL
+    if (SSL_CERT_DIR) {
+      const keyPath = path.join(SSL_CERT_DIR, 'server.key');
+      const certPath = path.join(SSL_CERT_DIR, 'server.crt');
 
-    wss.on('listening', () => {
-      resolve(wss);
-    });
-
-    wss.on('connection', (ws, req) => {
-      const clientIp = req.socket.remoteAddress;
-      console.log(`📱 Client connected: ${clientIp}`);
-
-      // Track this client for broadcasting
-      wsClients.add(ws);
-
-      ws.on('message', (data) => {
+      if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
         try {
-          const msg = JSON.parse(data.toString());
-
-          if (msg.type === 'midi') {
-            sendMidi(msg.status, msg.data1, msg.data2);
-          } else if (msg.type === 'ping') {
-            ws.send(JSON.stringify({ type: 'pong', port: selectedOutPortName, wsPort: WS_PORT }));
-          }
-        } catch (e) {
-          console.error('Invalid message:', e.message);
+          const options = {
+            key: fs.readFileSync(keyPath),
+            cert: fs.readFileSync(certPath)
+          };
+          server = https.createServer(options);
+          useSSL = true;
+          console.log('🔒 SSL certificates loaded - using WSS (secure WebSocket)');
+        } catch (err) {
+          console.warn('⚠️  Failed to load SSL certificates:', err.message);
+          console.log('   Falling back to WS (insecure WebSocket)');
         }
+      } else {
+        console.log('⚠️  SSL certificates not found at:', SSL_CERT_DIR);
+        console.log('   Using WS (insecure WebSocket)');
+      }
+    }
+
+    if (server) {
+      // Create WebSocket server attached to HTTPS server
+      wss = new WebSocket.Server({ server });
+      server.listen(WS_PORT, '0.0.0.0');
+
+      server.on('error', (err) => {
+        reject(err);
       });
 
-      ws.on('close', () => {
-        console.log(`📱 Client disconnected: ${clientIp}`);
-        wsClients.delete(ws);
+      server.on('listening', () => {
+        setupWebSocketHandlers(wss);
+        resolve(wss);
+      });
+    } else {
+      // Create standalone WebSocket server (no SSL)
+      wss = new WebSocket.Server({ port: WS_PORT });
+
+      wss.on('error', (err) => {
+        reject(err);
       });
 
-      // Send current status including the actual WebSocket port
-      ws.send(JSON.stringify({
-        type: 'connected',
-        port: selectedOutPortName,
-        inputPort: selectedInPortName,
-        status: midiOut ? 'ready' : 'no-midi',
-        trackSwitching: !!midiIn,
-        wsPort: WS_PORT
-      }));
+      wss.on('listening', () => {
+        setupWebSocketHandlers(wss);
+        resolve(wss);
+      });
+    }
+  });
+}
+
+// Set up WebSocket connection handlers
+function setupWebSocketHandlers(wss) {
+  wss.on('connection', (ws, req) => {
+    const clientIp = req.socket.remoteAddress;
+    console.log(`📱 Client connected: ${clientIp}`);
+
+    // Track this client for broadcasting
+    wsClients.add(ws);
+
+    ws.on('message', (data) => {
+      try {
+        const msg = JSON.parse(data.toString());
+
+        if (msg.type === 'midi') {
+          sendMidi(msg.status, msg.data1, msg.data2);
+        } else if (msg.type === 'ping') {
+          ws.send(JSON.stringify({ type: 'pong', port: selectedOutPortName, wsPort: WS_PORT, secure: useSSL }));
+        }
+      } catch (e) {
+        console.error('Invalid message:', e.message);
+      }
     });
 
-    const localIP = getLocalIP();
-    // Output port in a parseable format for Electron to read
-    console.log(`MIDI_SERVER_PORT=${WS_PORT}`);
-    console.log(`🌐 WebSocket server running on ws://localhost:${WS_PORT}`);
-    console.log(`\n📱 On your iPad, open: http://${localIP}:7100`);
-    console.log('   The app will automatically connect to this MIDI bridge.');
-    if (midiIn) {
-      console.log('   ✅ Track switching enabled - select tracks in Cubase to auto-switch maps');
-    }
-    console.log('');
+    ws.on('close', () => {
+      console.log(`📱 Client disconnected: ${clientIp}`);
+      wsClients.delete(ws);
+    });
+
+    // Send current status including the actual WebSocket port
+    ws.send(JSON.stringify({
+      type: 'connected',
+      port: selectedOutPortName,
+      inputPort: selectedInPortName,
+      status: midiOut ? 'ready' : 'no-midi',
+      trackSwitching: !!midiIn,
+      wsPort: WS_PORT,
+      secure: useSSL
+    }));
   });
+
+  const localIP = getLocalIP();
+  const protocol = useSSL ? 'wss' : 'ws';
+  const httpProtocol = useSSL ? 'https' : 'http';
+
+  // Output port in a parseable format for Electron to read
+  console.log(`MIDI_SERVER_PORT=${WS_PORT}`);
+  console.log(`MIDI_SERVER_SECURE=${useSSL}`);
+  console.log(`🌐 WebSocket server running on ${protocol}://localhost:${WS_PORT}`);
+  console.log(`\n📱 On your iPad/tablet, open: ${httpProtocol}://${localIP}:7100`);
+  console.log('   The app will automatically connect to this MIDI bridge.');
+  if (useSSL) {
+    console.log('   🔒 Using secure connection (WSS) - accept certificate warning on first connect');
+  }
+  if (midiIn) {
+    console.log('   ✅ Track switching enabled - select tracks in Cubase to auto-switch maps');
+  }
+  console.log('');
 }
 
 // Main
@@ -312,6 +376,13 @@ async function main() {
       console.error('Failed to find available port:', err.message);
       process.exit(1);
     }
+  }
+
+  // Check for certificate directory argument
+  const certDirArg = process.argv[3];
+  if (certDirArg) {
+    SSL_CERT_DIR = certDirArg;
+    console.log(`📜 Certificate directory: ${SSL_CERT_DIR}`);
   }
 
   await initMidi();

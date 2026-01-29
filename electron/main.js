@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const net = require('net');
 const { spawn } = require('child_process');
+const https = require('https');
 
 // Default ports - will be updated dynamically if busy
 const DEFAULT_WS_PORT = 7101;
@@ -14,6 +15,10 @@ const MACOS_RESERVED_PORTS = [3000, 5000, 7000];
 // Actual ports in use (set after finding available ports)
 let WS_PORT = DEFAULT_WS_PORT;
 let NEXT_PORT = DEFAULT_NEXT_PORT;
+
+// SSL certificate directory
+let CERT_DIR = null;
+let useSSL = false;
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
@@ -104,6 +109,46 @@ function getLocalIP() {
   return 'localhost';
 }
 
+// Initialize SSL certificates
+function initCertificates() {
+  // Store certs in app userData directory for persistence
+  CERT_DIR = path.join(app.getPath('userData'), 'certs');
+
+  const keyPath = path.join(CERT_DIR, 'server.key');
+  const certPath = path.join(CERT_DIR, 'server.crt');
+
+  // Check if certificates already exist
+  if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+    console.log('SSL certificates found at:', CERT_DIR);
+    useSSL = true;
+    return true;
+  }
+
+  // Try to generate certificates using generate-cert.js
+  const generateCertPath = isDev
+    ? path.join(__dirname, '..', 'generate-cert.js')
+    : path.join(process.resourcesPath, 'app.asar.unpacked', 'generate-cert.js');
+
+  if (fs.existsSync(generateCertPath)) {
+    try {
+      const { generateCertificate } = require(generateCertPath);
+      const result = generateCertificate(CERT_DIR);
+      if (result) {
+        useSSL = true;
+        console.log('SSL certificates generated successfully');
+        return true;
+      }
+    } catch (err) {
+      console.warn('Failed to generate SSL certificates:', err.message);
+    }
+  } else {
+    console.log('Certificate generator not found at:', generateCertPath);
+  }
+
+  console.log('Running without SSL - some tablets may show security warnings');
+  return false;
+}
+
 // Find Node.js executable
 function findNodeExecutable() {
   // Try process.execPath first (might be Node.js itself)
@@ -180,9 +225,14 @@ function startMidiServer() {
   log(`Starting MIDI server with cwd: ${serverCwd}`);
   log(`Log file: ${logPath}`);
 
-  // Spawn midi-server.js using system Node.js, passing the WebSocket port as argument
+  // Spawn midi-server.js using system Node.js, passing the WebSocket port and cert dir as arguments
   try {
-    midiServerProcess = spawn(nodeExecutable, [midiServerPath, WS_PORT.toString()], {
+    const args = [midiServerPath, WS_PORT.toString()];
+    if (useSSL && CERT_DIR) {
+      args.push(CERT_DIR);
+    }
+
+    midiServerProcess = spawn(nodeExecutable, args, {
       stdio: ['ignore', 'pipe', 'pipe'], // Capture stdout/stderr
       cwd: serverCwd
     });
@@ -212,7 +262,7 @@ function startMidiServer() {
   }
 }
 
-// Simple static file server for production
+// Simple static file server for production (HTTP or HTTPS)
 const http = require('http');
 
 let httpServer = null;
@@ -243,6 +293,7 @@ function startNextServer() {
 
     console.log('Starting static file server...');
     console.log('Serving from:', outDir);
+    console.log('SSL enabled:', useSSL);
 
     const mimeTypes = {
       '.html': 'text/html',
@@ -255,7 +306,8 @@ function startNextServer() {
       '.ico': 'image/x-icon'
     };
 
-    httpServer = http.createServer((req, res) => {
+    // Request handler
+    const requestHandler = (req, res) => {
       let filePath = req.url === '/' ? '/index.html' : req.url;
 
       // Remove query string
@@ -268,7 +320,8 @@ function startNextServer() {
         res.writeHead(200);
         res.end(JSON.stringify({
           wsPort: WS_PORT,
-          httpPort: NEXT_PORT
+          httpPort: NEXT_PORT,
+          secure: useSSL
         }));
         return;
       }
@@ -323,10 +376,36 @@ function startNextServer() {
           res.end(data);
         }
       });
-    });
+    };
+
+    // Create server with HTTPS if SSL is enabled
+    if (useSSL && CERT_DIR) {
+      const keyPath = path.join(CERT_DIR, 'server.key');
+      const certPath = path.join(CERT_DIR, 'server.crt');
+
+      if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+        try {
+          const options = {
+            key: fs.readFileSync(keyPath),
+            cert: fs.readFileSync(certPath)
+          };
+          httpServer = https.createServer(options, requestHandler);
+          console.log('Using HTTPS server');
+        } catch (err) {
+          console.warn('Failed to create HTTPS server:', err.message);
+          httpServer = http.createServer(requestHandler);
+        }
+      } else {
+        httpServer = http.createServer(requestHandler);
+      }
+    } else {
+      httpServer = http.createServer(requestHandler);
+    }
+
+    const protocol = useSSL ? 'https' : 'http';
 
     httpServer.listen(NEXT_PORT, '0.0.0.0', () => {
-      console.log(`Static server running on http://localhost:${NEXT_PORT}`);
+      console.log(`Static server running on ${protocol}://localhost:${NEXT_PORT}`);
       resolve();
     });
 
@@ -426,25 +505,26 @@ function createTray() {
 // Update tray menu
 function updateTrayMenu() {
   const localIP = getLocalIP();
+  const protocol = useSSL ? 'https' : 'http';
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Cubby Remote',
+      label: useSSL ? 'Cubby Remote (Secure)' : 'Cubby Remote',
       enabled: false
     },
     { type: 'separator' },
     {
       label: 'Open in Browser',
       click: () => {
-        shell.openExternal(`http://localhost:${NEXT_PORT}`);
+        shell.openExternal(`${protocol}://localhost:${NEXT_PORT}`);
       }
     },
     {
-      label: `iPad: http://${localIP}:${NEXT_PORT}`,
+      label: `iPad/Tablet: ${protocol}://${localIP}:${NEXT_PORT}`,
       enabled: false
     },
     {
-      label: `Ports: HTTP ${NEXT_PORT}, WS ${WS_PORT}`,
+      label: `Ports: ${useSSL ? 'HTTPS' : 'HTTP'} ${NEXT_PORT}, ${useSSL ? 'WSS' : 'WS'} ${WS_PORT}`,
       enabled: false
     },
     { type: 'separator' },
@@ -707,7 +787,10 @@ app.whenReady().then(async () => {
     return;
   }
 
-  // Start MIDI server as separate process (pass the WS port as argument)
+  // Initialize SSL certificates (will generate if not present)
+  initCertificates();
+
+  // Start MIDI server as separate process (pass the WS port and cert dir as arguments)
   startMidiServer();
 
   // Always create tray, even if other things fail
@@ -716,16 +799,23 @@ app.whenReady().then(async () => {
   try {
     await startNextServer();
     // Auto-open browser only if server started
+    const protocol = useSSL ? 'https' : 'http';
     setTimeout(() => {
-      shell.openExternal(`http://localhost:${NEXT_PORT}`);
+      shell.openExternal(`${protocol}://localhost:${NEXT_PORT}`);
     }, 2000);
   } catch (error) {
     console.error('Failed to start Next.js server:', error);
   }
 
+  const httpProtocol = useSSL ? 'https' : 'http';
+  const wsProtocol = useSSL ? 'wss' : 'ws';
+
   console.log('\nApp running in system tray. Click the tray icon for options.');
-  console.log(`HTTP server: http://localhost:${NEXT_PORT}`);
-  console.log(`WebSocket server: ws://localhost:${WS_PORT}`);
+  console.log(`HTTP server: ${httpProtocol}://localhost:${NEXT_PORT}`);
+  console.log(`WebSocket server: ${wsProtocol}://localhost:${WS_PORT}`);
+  if (useSSL) {
+    console.log('🔒 SSL enabled - tablets will need to accept certificate on first connect');
+  }
 });
 
 app.on('window-all-closed', (e) => {

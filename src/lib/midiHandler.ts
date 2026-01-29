@@ -36,16 +36,25 @@ const MIDI_INPUT_STORAGE_KEY = 'cubase-remote-midi-input';
 // Default WebSocket port - will be discovered dynamically
 const DEFAULT_WS_PORT = 7101;
 
-// Fetch the current WebSocket port from the config API
-async function getWebSocketPort(): Promise<number> {
+// WebSocket configuration
+interface WsConfig {
+  port: number;
+  secure: boolean;
+}
+
+// Fetch the current WebSocket config from the config API
+async function getWebSocketConfig(): Promise<WsConfig> {
   try {
     // Try to get config from the server
     const response = await fetch('/api/config');
     if (response.ok) {
       const config = await response.json();
       if (config.wsPort) {
-        console.log(`[MIDI] Got WebSocket port from config: ${config.wsPort}`);
-        return config.wsPort;
+        console.log(`[MIDI] Got WebSocket config: port=${config.wsPort}, secure=${config.secure}`);
+        return {
+          port: config.wsPort,
+          secure: config.secure === true
+        };
       }
     }
   } catch (e) {
@@ -54,13 +63,32 @@ async function getWebSocketPort(): Promise<number> {
   }
 
   // Probe for available WebSocket server (try ports 7101-7110)
+  // First try WSS (secure), then fall back to WS
   const wsHost = window.location.hostname || 'localhost';
+
+  // If page is served over HTTPS, try WSS first
+  const isSecurePage = window.location.protocol === 'https:';
+
   for (let port = DEFAULT_WS_PORT; port < DEFAULT_WS_PORT + 10; port++) {
+    // Try secure first if page is secure
+    if (isSecurePage) {
+      try {
+        const available = await probeWebSocketPort(wsHost, port, true);
+        if (available) {
+          console.log(`[MIDI] Found secure WebSocket server on port ${port}`);
+          return { port, secure: true };
+        }
+      } catch (e) {
+        // Continue
+      }
+    }
+
+    // Try insecure (only works on localhost or with mixed content allowed)
     try {
-      const available = await probeWebSocketPort(wsHost, port);
+      const available = await probeWebSocketPort(wsHost, port, false);
       if (available) {
         console.log(`[MIDI] Found WebSocket server on port ${port}`);
-        return port;
+        return { port, secure: false };
       }
     } catch (e) {
       // Continue to next port
@@ -69,13 +97,14 @@ async function getWebSocketPort(): Promise<number> {
 
   // Fall back to default
   console.log(`[MIDI] Using default WebSocket port ${DEFAULT_WS_PORT}`);
-  return DEFAULT_WS_PORT;
+  return { port: DEFAULT_WS_PORT, secure: isSecurePage };
 }
 
 // Quick probe to check if WebSocket server is available on a port
-function probeWebSocketPort(host: string, port: number): Promise<boolean> {
+function probeWebSocketPort(host: string, port: number, secure: boolean = false): Promise<boolean> {
   return new Promise((resolve) => {
-    const ws = new WebSocket(`ws://${host}:${port}`);
+    const protocol = secure ? 'wss' : 'ws';
+    const ws = new WebSocket(`${protocol}://${host}:${port}`);
     const timeout = setTimeout(() => {
       ws.close();
       resolve(false);
@@ -109,10 +138,13 @@ class MidiHandler {
   private wsPortName: string = '';
   private wsReconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private wsPort: number = DEFAULT_WS_PORT;
+  private wsSecure: boolean = false;
 
   async initialize(): Promise<MidiState> {
-    // First, discover the WebSocket port
-    this.wsPort = await getWebSocketPort();
+    // First, discover the WebSocket config (port and whether to use WSS)
+    const wsConfig = await getWebSocketConfig();
+    this.wsPort = wsConfig.port;
+    this.wsSecure = wsConfig.secure;
 
     // Try Web MIDI first
     if (navigator.requestMIDIAccess) {
@@ -148,7 +180,8 @@ class MidiHandler {
   // Connect to WebSocket just for receiving track names (used when Web MIDI handles output)
   private connectWebSocketForTrackNames(): void {
     const wsHost = window.location.hostname || 'localhost';
-    const wsUrl = `ws://${wsHost}:${this.wsPort}`;
+    const protocol = this.wsSecure ? 'wss' : 'ws';
+    const wsUrl = `${protocol}://${wsHost}:${this.wsPort}`;
 
     console.log(`[MIDI] Connecting WebSocket for track names: ${wsUrl}`);
 
@@ -188,7 +221,8 @@ class MidiHandler {
     return new Promise((resolve) => {
       // Determine WebSocket URL based on current page location
       const wsHost = window.location.hostname || 'localhost';
-      const wsUrl = `ws://${wsHost}:${this.wsPort}`;
+      const protocol = this.wsSecure ? 'wss' : 'ws';
+      const wsUrl = `${protocol}://${wsHost}:${this.wsPort}`;
 
       console.log(`[MIDI] Connecting to WebSocket: ${wsUrl}`);
 

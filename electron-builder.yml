@@ -38,6 +38,7 @@ asarUnpack:
   - "out/**/*"
   - "build/**/*"
   - "midi-server.js"
+  - "generate-cert.js"
   - "rename-tracks-to-expmaps.js"
   - "node_modules/midi/**/*"
   - "node_modules/jzz/**/*"
