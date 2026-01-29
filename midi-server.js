@@ -96,55 +96,55 @@ async function initMidi() {
   console.log('\n🎹 MIDI Bridge Server (Bidirectional)');
   console.log('=====================================\n');
 
-  const info = JZZ().info();
-  const outputs = info.outputs;
-  const inputs = info.inputs;
+  // Use 'midi' package for both input and output (more reliable in Electron)
+  const midiOutput = new midi.Output();
+  const midiInput = new midi.Input();
+
+  const outputCount = midiOutput.getPortCount();
+  const inputCount = midiInput.getPortCount();
 
   // List available MIDI ports
   console.log('Available MIDI outputs:');
-  outputs.forEach((port, i) => {
-    console.log(`  ${i + 1}. ${port.name}`);
-  });
+  for (let i = 0; i < outputCount; i++) {
+    console.log(`  ${i}: ${midiOutput.getPortName(i)}`);
+  }
   console.log('');
 
   console.log('Available MIDI inputs:');
-  inputs.forEach((port, i) => {
-    console.log(`  ${i + 1}. ${port.name}`);
-  });
+  for (let i = 0; i < inputCount; i++) {
+    console.log(`  ${i}: ${midiInput.getPortName(i)}`);
+  }
   console.log('');
 
   // --- Set up OUTPUT (Browser → Cubase) ---
   const preferredOutNames = ['Browser to Cubase', 'Browser to cubase', 'IAC Driver', 'loopMIDI'];
+  let outputPortIndex = -1;
 
   for (const preferred of preferredOutNames) {
-    const found = outputs.find(p => p.name.toLowerCase().includes(preferred.toLowerCase()));
-    if (found) {
-      selectedOutPortName = found.name;
-      break;
+    for (let i = 0; i < outputCount; i++) {
+      if (midiOutput.getPortName(i).toLowerCase().includes(preferred.toLowerCase())) {
+        outputPortIndex = i;
+        selectedOutPortName = midiOutput.getPortName(i);
+        break;
+      }
     }
+    if (outputPortIndex >= 0) break;
   }
 
-  if (selectedOutPortName) {
+  if (outputPortIndex >= 0) {
     try {
-      midiOut = JZZ().openMidiOut(selectedOutPortName);
+      midiOutput.openPort(outputPortIndex);
+      midiOut = midiOutput;
       console.log(`✅ Output: ${selectedOutPortName} (Browser → Cubase)`);
     } catch (e) {
       console.error(`❌ Failed to open MIDI output: ${e.message}`);
     }
   } else {
     console.log('⚠️  No MIDI output found for Browser → Cubase');
+    console.log('   Create an IAC Driver bus or loopMIDI port named "Browser to Cubase"');
   }
 
-  // --- Set up INPUT (Cubase → Browser) using 'midi' package ---
-  const midiInput = new midi.Input();
-  const inputCount = midiInput.getPortCount();
-
-  console.log('Available MIDI inputs (midi package):');
-  for (let i = 0; i < inputCount; i++) {
-    console.log(`  ${i}: ${midiInput.getPortName(i)}`);
-  }
-
-  // Find Cubase to Browser port
+  // --- Set up INPUT (Cubase → Browser) ---
   const preferredInNames = ['ArticulationRemote', 'Articulation Remote', 'Cubase to Browser'];
   let inputPortIndex = -1;
 
@@ -174,7 +174,7 @@ async function initMidi() {
     }
   } else {
     console.log('⚠️  No "ArticulationRemote" input found - track switching disabled');
-    console.log('   Create this port in loopMIDI if you want auto track switching');
+    console.log('   Create this port in loopMIDI/IAC Driver if you want auto track switching');
   }
 
   console.log('');
@@ -230,10 +230,13 @@ function sendMidi(status, data1, data2) {
 
   if (midiOut) {
     try {
-      midiOut.send(msg);
+      // Use sendMessage for 'midi' package (not send like JZZ)
+      midiOut.sendMessage(msg);
     } catch (e) {
       console.error(`   Error: ${e.message}`);
     }
+  } else {
+    console.warn('   ⚠️ No MIDI output - message not sent');
   }
 }
 
