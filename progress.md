@@ -1,5 +1,33 @@
 # Progress Log
 
+## 2026-01-29: v1.3.2 - Splash Screen & GitHub Actions CI/CD
+
+### Added
+- **Splash Screen**: Shows connection URL on startup with user acknowledgment
+  - Displays local IP address for iPad/tablet connection
+  - User clicks "Open in Browser" to continue (not auto-dismiss)
+  - Includes startup status messages
+
+- **GitHub Actions CI/CD**: Fully automated Mac builds
+  - Builds on `macos-latest` with code signing and notarization
+  - Manual trigger: `gh workflow run build.yml`
+  - Automatic builds on version tags (`v*`)
+  - Draft GitHub Release created with DMG artifacts
+
+### Files Added
+- `.github/workflows/build.yml` - CI/CD workflow
+- `electron/splash.html` - Splash screen UI
+- `electron/splash-preload.js` - IPC bridge for splash
+- `build/notarize.js` - Dual-mode notarization (CI + local)
+
+### Release
+```bash
+git tag v1.3.2 && git push origin v1.3.2
+```
+→ Builds Mac (Intel + ARM) with code signing → Creates draft GitHub Release
+
+---
+
 ## 2026-01-29: v1.3.1 - Fixed MIDI Output in Packaged App
 
 ### Problem
