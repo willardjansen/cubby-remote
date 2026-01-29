@@ -1,5 +1,25 @@
 # Progress Log
 
+## 2026-01-29: v1.3.1 - Fixed MIDI Output in Packaged App
+
+### Problem
+MIDI output (articulation switching) wasn't working in the packaged Electron app, though track switching worked fine.
+
+### Root Cause
+The `JZZ` library doesn't work properly in packaged Electron apps - it returns empty MIDI port lists. The `midi` package (native Node.js MIDI) works reliably.
+
+### Solution
+- Switched from `JZZ` to `midi` package for MIDI output
+- Updated `sendMidi()` to use `midiOut.sendMessage()` instead of `midiOut.send()`
+- Now both input and output use the `midi` package consistently
+
+### Also Fixed
+- Auto port detection to avoid macOS AirPlay ports (3000, 5000, 7000)
+- SSL/HTTPS support (disabled by default for easier tablet setup)
+- Added troubleshooting for ERR_SSL_PROTOCOL_ERROR (use http://, incognito mode)
+
+---
+
 ## 2026-01-18: Fixed Electron Build Hanging Issue
 
 ### Problem
