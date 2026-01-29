@@ -85,6 +85,26 @@
       text-align: center;
       line-height: 1.5;
     }
+    .continue-btn {
+      margin-top: 24px;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      -webkit-app-region: no-drag;
+    }
+    .continue-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(233, 69, 96, 0.4);
+    }
+    .continue-btn:active {
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
@@ -109,6 +129,10 @@
     <div class="connection-url" id="connection-url">-</div>
   </div>
 
+  <button class="continue-btn" id="continue-btn" style="display: none;">
+    Open in Browser
+  </button>
+
   <p class="hint">
     Make sure your iPad is on the same WiFi network as this computer
   </p>
@@ -120,10 +144,16 @@
       document.getElementById('spinner').style.display = 'none';
       document.getElementById('connection-info').style.display = 'block';
       document.getElementById('connection-url').textContent = info.url;
+      document.getElementById('continue-btn').style.display = 'block';
     });
 
     window.electronAPI?.onStatus((status) => {
       document.getElementById('status').textContent = status;
+    });
+
+    // Handle continue button click
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      window.electronAPI?.continue();
     });
   </script>
 </body>

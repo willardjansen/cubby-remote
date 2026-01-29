@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, shell, dialog, nativeImage } = require('electron');
+const { app, BrowserWindow, Tray, Menu, shell, dialog, nativeImage, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const net = require('net');
@@ -127,7 +127,11 @@ function closeSplashAndOpenBrowser(url) {
       splashWindow.close();
       splashWindow = null;
     }
-  }, 1500);
+    // Hide dock after splash closes (macOS)
+    if (process.platform === 'darwin') {
+      app.dock.hide();
+    }
+  }, 500);
 }
 
 // Expression maps directory - use project folder
@@ -880,17 +884,10 @@ app.whenReady().then(async () => {
     updateSplashStatus('Ready!');
     sendConnectionInfo(connectionUrl);
 
-    // Wait a moment for user to see the URL, then open browser and close splash
-    setTimeout(() => {
+    // Wait for user to click "Continue" button
+    ipcMain.once('splash-continue', () => {
       closeSplashAndOpenBrowser(`${protocol}://localhost:${NEXT_PORT}`);
-
-      // Hide dock after splash closes (macOS)
-      setTimeout(() => {
-        if (process.platform === 'darwin') {
-          app.dock.hide();
-        }
-      }, 500);
-    }, 3000); // Show connection info for 3 seconds
+    });
 
   } catch (error) {
     console.error('Failed to start Next.js server:', error);
