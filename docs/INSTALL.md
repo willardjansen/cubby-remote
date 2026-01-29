@@ -22,7 +22,7 @@ The easiest way to use Cubby Remote is with the standalone installer. No Node.js
 1. Run the installer
 2. Follow the setup wizard
 3. Launch "Cubby Remote" from Start Menu or Desktop shortcut
-4. The app runs in system tray and auto-opens browser at http://localhost:3000
+4. The app runs in system tray and auto-opens browser at http://localhost:7100
 
 **Benefits:**
 - No Node.js installation needed
@@ -52,7 +52,7 @@ npm install
 npm run all
 ```
 
-The app runs at **http://localhost:3000**
+The app runs at **http://localhost:7100**
 
 ---
 
@@ -202,7 +202,7 @@ expression-maps/
 1. Run `npm run all` on your computer
 2. Note the IP address shown in the terminal (e.g., `192.168.1.40`)
 3. On iPad, open Safari or Chrome
-4. Navigate to `http://YOUR_IP:3000` (e.g., `http://192.168.1.40:3000`)
+4. Navigate to `http://YOUR_IP:7100` (e.g., `http://192.168.1.40:7100`)
 
 **Network Notes:**
 - PC can be on Ethernet, iPad on WiFi - just need same network
@@ -285,7 +285,7 @@ This can happen after modifying scripts. Fix:
 
 | What | Where |
 |------|-------|
-| Web app | http://localhost:3000 or http://YOUR_IP:3000 |
+| Web app | http://localhost:7100 or http://YOUR_IP:7100 |
 | MIDI bridge | Port 3001 (WebSocket) |
 | Expression maps | `expression-maps/` folder |
 | MIDI Remote script | `C:\Program Files\Steinberg\Cubase 15\midiremote_factory_scripts\Public\articulation\remote\` |

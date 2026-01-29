@@ -32,7 +32,7 @@ export type TrackNameCallback = (trackName: string) => void;
 
 const MIDI_OUTPUT_STORAGE_KEY = 'cubase-remote-midi-output';
 const MIDI_INPUT_STORAGE_KEY = 'cubase-remote-midi-input';
-const WS_PORT = 3001;
+const WS_PORT = 7101;
 
 class MidiHandler {
   private midiAccess: WebMidi.MIDIAccess | null = null;

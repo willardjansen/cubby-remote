@@ -12,7 +12,7 @@ Build a Logic Pro version of Cubby Remote that auto-detects track selection and 
 │  ┌─────────────┐    ┌──────────────┐    ┌───────────────┐  │
 │  │ LogicTrack  │───▶│ midi-server  │◀──▶│  Logic Pro    │  │
 │  │ Monitor     │    │ (WebSocket)  │    │               │  │
-│  │ (Swift App) │    │  :3001       │    │               │  │
+│  │ (Swift App) │    │  :7101       │    │               │  │
 │  └─────────────┘    └──────────────┘    └───────────────┘  │
 │         │                  │                   ▲            │
 │   Accessibility           │                   │            │
@@ -21,7 +21,7 @@ Build a Logic Pro version of Cubby Remote that auto-detects track selection and 
 │                    ┌─────────────┐            │            │
 │                    │  Next.js    │────────────┘            │
 │                    │  Web App    │  (sends MIDI)           │
-│                    │  :3000      │                         │
+│                    │  :7100      │                         │
 │                    └─────────────┘                         │
 └─────────────────────────────────────────────────────────────┘
           ▲

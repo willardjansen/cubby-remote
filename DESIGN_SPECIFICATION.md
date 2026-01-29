@@ -100,7 +100,7 @@ Build a web application that:
 │  ┌──────────────┐   ┌─────────────────┐   ┌─────────────────┐  │
 │  │   Next.js    │◀─▶│   MIDI Bridge   │◀─▶│     Cubase      │  │
 │  │   Web App    │   │     Server      │   │                 │  │
-│  │   :3000      │   │     :3001       │   │                 │  │
+│  │   :7100      │   │     :7101       │   │                 │  │
 │  └──────────────┘   └─────────────────┘   └─────────────────┘  │
 │         ▲                   ▲                      ▲            │
 │         │                   │                      │            │
@@ -300,7 +300,7 @@ CC 117: End marker (value 127)
 2. Component calls midiHandler.sendMessages([{status, data1, data2}])
 3. midiHandler checks connection type:
    a. Web MIDI: Send directly to selected output
-   b. WebSocket: Send JSON to ws://host:3001
+   b. WebSocket: Send JSON to ws://host:7101
 4. midi-server.js receives WebSocket message
 5. Server sends MIDI via jzz to "Browser to Cubase" port
 6. Cubase receives on input, triggers articulation

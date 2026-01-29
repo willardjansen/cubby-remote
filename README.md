@@ -32,7 +32,7 @@ An articulation switcher for Cubase users, designed for iPad/tablet use. Automat
 2. Run the installer
    - **macOS users:** If you see "Cubby Remote is damaged", see [macOS Installation Issue](#macos-installation-issue) below
 3. Launch "Cubby Remote" from Start Menu or Desktop
-4. The app runs in system tray and auto-opens browser to http://localhost:3000
+4. The app runs in system tray and auto-opens browser to http://localhost:7100
 
 The standalone app includes:
 - Built-in MIDI server - no terminal commands needed!
@@ -76,8 +76,8 @@ npm run dev     # Terminal 2: Web server
 
 | Device | URL |
 |--------|-----|
-| Local browser | http://localhost:3000 |
-| iPad / Network | http://YOUR_IP:3000 |
+| Local browser | http://localhost:7100 |
+| iPad / Network | http://YOUR_IP:7100 |
 
 **Note:** Your PC can be on Ethernet while iPad is on WiFi - they just need to be on the same network.
 
@@ -91,7 +91,7 @@ npm run dev     # Terminal 2: Web server
 │  ┌─────────────┐    ┌──────────────┐    ┌───────────────┐  │
 │  │  Next.js    │◀──▶│ MIDI Bridge  │◀──▶│    Cubase     │  │
 │  │  Web App    │    │  Server      │    │               │  │
-│  │  :3000      │    │  :3001       │    │               │  │
+│  │  :7100      │    │  :7101       │    │               │  │
 │  └─────────────┘    └──────────────┘    └───────────────┘  │
 │         ▲                  ▲                   ▲            │
 └─────────│──────────────────│───────────────────│────────────┘
@@ -200,7 +200,7 @@ To solve the track naming challenge, use the built-in **Template Builder** to ge
 
 **Access the Template Builder:**
 - **In-App Button:** Click the template icon in the top-right corner of the main app
-- **Direct URL:** http://localhost:3000/template-builder
+- **Direct URL:** http://localhost:7100/template-builder
 - **Standalone App:** Same URL, or use the in-app button
 
 **How to Use:**
@@ -295,7 +295,7 @@ sudo cp "cubase-midi-remote/articulation_remote.js" "/Applications/Cubase 15.app
 ### Basic Articulation Switching
 
 1. Start the servers: `npm run all`
-2. Open the app on iPad: `http://YOUR_IP:3000`
+2. Open the app on iPad: `http://YOUR_IP:7100`
 3. Load an expression map (drag & drop or use Library)
 4. Tap articulation buttons to switch sounds in Cubase
 
@@ -322,7 +322,7 @@ sudo cp "cubase-midi-remote/articulation_remote.js" "/Applications/Cubase 15.app
 ```bash
 node generate-dawproject.js <folder> <output.dawproject>
 ```
-Or use the web UI at http://localhost:3000/template-builder
+Or use the web UI at http://localhost:7100/template-builder
 
 ## Building from Source
 

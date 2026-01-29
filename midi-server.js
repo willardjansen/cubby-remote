@@ -14,7 +14,7 @@ const JZZ = require('jzz');
 const midi = require('midi');
 const os = require('os');
 
-const WS_PORT = 3001;
+const WS_PORT = 7101;
 
 // Get local IP address
 function getLocalIP() {
@@ -232,7 +232,7 @@ function startServer() {
 
   const localIP = getLocalIP();
   console.log(`🌐 WebSocket server running on ws://localhost:${WS_PORT}`);
-  console.log(`\n📱 On your iPad, open: http://${localIP}:3000`);
+  console.log(`\n📱 On your iPad, open: http://${localIP}:7100`);
   console.log('   The app will automatically connect to this MIDI bridge.');
   if (midiIn) {
     console.log('   ✅ Track switching enabled - select tracks in Cubase to auto-switch maps');

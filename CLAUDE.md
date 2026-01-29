@@ -16,7 +16,7 @@ Cubase Articulation Remote (branded as "Cubby Remote") is a Next.js web app that
 │  ┌─────────────┐    ┌──────────────┐    ┌───────────────┐  │
 │  │  Next.js    │◀──▶│ MIDI Bridge  │◀──▶│    Cubase     │  │
 │  │  Web App    │    │  Server      │    │               │  │
-│  │  :3000      │    │  :3001       │    │               │  │
+│  │  :7100      │    │  :7101       │    │               │  │
 │  └─────────────┘    └──────────────┘    └───────────────┘  │
 │         ▲                  ▲                   ▲            │
 └─────────│──────────────────│───────────────────│────────────┘
@@ -77,7 +77,7 @@ Cubase Articulation Remote (branded as "Cubby Remote") is a Next.js web app that
 
 ### 1. MIDI Handler (`src/lib/midiHandler.ts`)
 - Tries Web MIDI API first
-- Falls back to WebSocket connection to `ws://HOST:3001`
+- Falls back to WebSocket connection to `ws://HOST:7101`
 - `trackNameListeners` receive track name changes from Cubase
 - `sendMessages()` routes to appropriate output
 
@@ -137,7 +137,7 @@ The project includes an Electron wrapper that creates a system tray application:
 - Expression maps: `...cubby-remote\resources\expression-maps\`
 - System tray menu provides: Add Maps, Open Maps Folder, Show App, Quit
 - Built-in MIDI server (port 3001) starts automatically
-- Auto-opens browser to http://localhost:3000 on launch
+- Auto-opens browser to http://localhost:7100 on launch
 
 ## Windows Setup
 
@@ -175,7 +175,7 @@ npm run dev     # Terminal 2
 
 ### iPad Access
 1. Run `npm run midi` - it auto-detects and displays your IP
-2. iPad Safari/Chrome: `http://YOUR_IP:3000` (shown in terminal)
+2. iPad Safari/Chrome: `http://YOUR_IP:7100` (shown in terminal)
 
 **Note:** PC can be on Ethernet while iPad is on WiFi - they just need to be on the same network (router).
 
@@ -280,7 +280,7 @@ Unlike Windows, macOS IAC Driver doesn't have the MIDI feedback loop issue, so s
 
 ### iPad Access (from Mac)
 1. Run `npm run midi` - it displays your Mac's IP address
-2. iPad Safari/Chrome: `http://YOUR_IP:3000`
+2. iPad Safari/Chrome: `http://YOUR_IP:7100`
 3. Mac and iPad must be on the same network
 
 ## Current State (Jan 2026)

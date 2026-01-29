@@ -40,7 +40,7 @@ A complete guide to using Cubby Remote for articulation switching in Cubase.
 
 When you start Cubby Remote:
 1. The app icon appears in your system tray (Windows) or menu bar (Mac)
-2. Your default browser opens to http://localhost:3000
+2. Your default browser opens to http://localhost:7100
 3. The built-in MIDI server starts automatically
 
 ### Virtual MIDI Setup
@@ -216,7 +216,7 @@ Starting fresh? Use the Template Builder to create Cubase projects where track n
 ### Access the Template Builder
 
 - **In-app:** Click the template icon (grid) in the top-right corner
-- **Direct URL:** http://localhost:3000/template-builder
+- **Direct URL:** http://localhost:7100/template-builder
 
 ### Creating a Template
 
@@ -262,7 +262,7 @@ Use your iPad as a wireless articulation controller!
    - **Windows:** Run `ipconfig` in Command Prompt
    - **Mac:** System Preferences → Network
    - Or check the tray menu - it shows the URL
-3. On iPad Safari, go to: `http://YOUR_IP:3000`
+3. On iPad Safari, go to: `http://YOUR_IP:7100`
 
 ### Install as a Web App (PWA)
 
@@ -359,7 +359,7 @@ For debugging MIDI issues:
 
 | Menu Item | Description |
 |-----------|-------------|
-| Open in Browser | Opens http://localhost:3000 |
+| Open in Browser | Opens http://localhost:7100 |
 | iPad: http://... | Shows the URL for iPad access |
 | Add Expression Maps... | Import .expressionmap files |
 | Open Expression Maps Folder | Opens the folder in Explorer/Finder |

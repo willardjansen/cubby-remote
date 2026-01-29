@@ -4,8 +4,8 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 
 // Configuration
-const WS_PORT = 3001;
-const NEXT_PORT = 3000;
+const WS_PORT = 7101;
+const NEXT_PORT = 7100;
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
 // References
@@ -157,7 +157,7 @@ let httpServer = null;
 function startNextServer() {
   return new Promise((resolve) => {
     if (isDev) {
-      console.log('Development mode - connect to Next.js dev server at http://localhost:3000');
+      console.log('Development mode - connect to Next.js dev server at http://localhost:7100');
       resolve();
       return;
     }

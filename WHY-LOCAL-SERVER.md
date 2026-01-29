@@ -6,7 +6,7 @@ Here's what's happening:
 
 ## The Problem: Browser Security
 
-Your **web app** (running at `http://localhost:3000` in the browser) **cannot directly access files** on your computer. This is a browser security restriction - JavaScript running in a browser can't use Node.js `fs` (file system) module.
+Your **web app** (running at `http://localhost:7100` in the browser) **cannot directly access files** on your computer. This is a browser security restriction - JavaScript running in a browser can't use Node.js `fs` (file system) module.
 
 ## The Solution: Local API Server
 
@@ -22,20 +22,20 @@ This is what the "server" does - it's just a local HTTP endpoint.
 - Next.js dev server runs the API route
 - File: `src/app/api/expression-maps/route.ts`
 - Can use Node.js `fs` module to read files
-- Serves at: `http://localhost:3000/api/expression-maps`
+- Serves at: `http://localhost:7100/api/expression-maps`
 
 ### Production Electron App
 - `electron/main.js` starts a simple HTTP server (line 153-263)
 - The `handleApiRequest()` function (line 266) does the same thing
 - Reads from: `...Cubby Remote\resources\expression-maps\`
-- Serves at: `http://localhost:3000/api/expression-maps`
+- Serves at: `http://localhost:7100/api/expression-maps`
 
 ## The Flow
 
 ```
 ┌─────────────────────┐
 │  Browser/Web App    │
-│  (localhost:3000)   │
+│  (localhost:7100)   │
 └──────────┬──────────┘
            │ HTTP GET /api/expression-maps?file=Amati Viola.expressionmap
            ↓

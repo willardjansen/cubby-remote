@@ -5,6 +5,15 @@ All notable changes to Cubby Remote will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-01-29
+
+### Changed
+- **Port numbers updated** - Changed from 3000/3001 to 7100/7101 to avoid conflict with macOS AirPlay Receiver (port 7000)
+  - Web UI: `http://localhost:7100`
+  - WebSocket MIDI bridge: `ws://localhost:7101`
+
+---
+
 ## [1.1.0] - 2026-01-17
 
 ### Added
