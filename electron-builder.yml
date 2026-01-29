@@ -60,6 +60,8 @@ mac:
   entitlementsInherit: build/entitlements.mac.plist
   notarize:
     teamId: "9N27LU6UBD"
+    notarizeOptions:
+      keychainProfile: "cubby-remote"
 
 dmg:
   contents:
