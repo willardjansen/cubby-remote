@@ -82,7 +82,7 @@ export function ArticulationButton({
 
   // For merged maps, show the channel
   const channelDisplay = articulation.midiChannel !== undefined
-    ? `Ch${articulation.midiChannel + 1}`
+    ? `Ch${articulation.midiChannel}`
     : null;
 
   return (
