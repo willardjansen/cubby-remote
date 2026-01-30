@@ -1,47 +1,9 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
 
 export default function About() {
   const [isOpen, setIsOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [subscribeMessage, setSubscribeMessage] = useState('');
-
-  const handleSubscribe = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!email || !email.includes('@')) {
-      setSubscribeStatus('error');
-      setSubscribeMessage('Please enter a valid email address');
-      return;
-    }
-
-    setSubscribeStatus('loading');
-    try {
-      const response = await fetch('https://cubby-control-center.vercel.app/api/newsletter/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          product_interest: ['cubby-remote'],
-          source: 'cubby-remote',
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSubscribeStatus('success');
-        setSubscribeMessage(data.already_subscribed ? "You're already subscribed!" : 'Thanks for subscribing!');
-        setEmail('');
-      } else {
-        throw new Error(data.error || 'Failed to subscribe');
-      }
-    } catch {
-      setSubscribeStatus('error');
-      setSubscribeMessage('Something went wrong. Please try again.');
-    }
-  };
 
   if (!isOpen) {
     return (
@@ -57,12 +19,12 @@ export default function About() {
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 rounded-xl max-w-md w-full p-6 relative border border-zinc-700 max-h-[90vh] overflow-y-auto">
+      <div className="bg-zinc-900 rounded-xl max-w-md w-full p-6 relative border border-zinc-700">
         <button
           onClick={() => setIsOpen(false)}
           className="absolute top-4 right-4 text-zinc-500 hover:text-white text-2xl leading-none"
         >
-          &times;
+          ×
         </button>
 
         <h2 className="text-xl font-bold text-white mb-1">
@@ -74,7 +36,7 @@ export default function About() {
 
         <div className="bg-amber-900/30 border border-amber-700/50 rounded-lg p-3 mb-4">
           <p className="text-amber-200 text-sm">
-            <strong>Scam Warning:</strong> This app is FREE. If you paid for it, you were scammed.
+            <strong>⚠️ Scam Warning:</strong> This app is FREE. If you paid for it, you were scammed.
             Only download from the official source below.
           </p>
         </div>
@@ -93,48 +55,6 @@ export default function About() {
           </a>
         </div>
 
-        {/* Newsletter Signup */}
-        <div className="border-t border-zinc-700 pt-4 mb-4">
-          <p className="text-zinc-300 text-sm font-medium mb-2">
-            Stay Updated
-          </p>
-          <p className="text-zinc-500 text-xs mb-3">
-            Get notified about new features and updates.
-          </p>
-
-          {subscribeStatus === 'success' ? (
-            <div className="text-[#F4A5C6] text-sm px-4 py-2 bg-[#F4A5C6]/10 rounded-lg">
-              {subscribeMessage}
-            </div>
-          ) : (
-            <form onSubmit={handleSubscribe} className="flex gap-2">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                disabled={subscribeStatus === 'loading'}
-                className="flex-1 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg
-                         text-zinc-200 text-sm placeholder:text-zinc-600
-                         focus:outline-none focus:border-[#F4A5C6]/50 transition-colors"
-              />
-              <button
-                type="submit"
-                disabled={subscribeStatus === 'loading'}
-                className="px-4 py-2 bg-[#F4A5C6] text-zinc-900 rounded-lg text-sm font-semibold
-                         hover:opacity-90 disabled:opacity-70 disabled:cursor-wait transition-all"
-              >
-                {subscribeStatus === 'loading' ? '...' : 'Subscribe'}
-              </button>
-            </form>
-          )}
-
-          {subscribeStatus === 'error' && (
-            <p className="text-red-400 text-xs mt-2">{subscribeMessage}</p>
-          )}
-        </div>
-
-        {/* Support Section */}
         <div className="border-t border-zinc-700 pt-4">
           <p className="text-zinc-400 text-sm mb-3">
             If you find this useful, please consider supporting development:
@@ -153,7 +73,7 @@ export default function About() {
         </div>
 
         <p className="text-zinc-500 text-xs mt-4">
-          &copy; {new Date().getFullYear()} Cubby Composer. All rights reserved.
+          © 2026 Willard Jansen. Cubby Remote.
         </p>
       </div>
     </div>
